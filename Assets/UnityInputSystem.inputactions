@@ -1,0 +1,52 @@
+{
+    "name": "UnityInputSystem",
+    "maps": [
+        {
+            "name": "Gameplay",
+            "id": "a1b07abb-a401-4740-a6a2-0ec09a1f3730",
+            "actions": [
+                {
+                    "name": "Left",
+                    "type": "Button",
+                    "id": "c19f0dbc-3c42-4400-a102-f1c5d3930667",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Right",
+                    "type": "Button",
+                    "id": "c345bc4c-4345-496c-bc94-a3c7a97d0ccf",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "07844030-03ee-49fb-b93b-0c30fccf9b0f",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d9a58cc6-9e17-4a03-a626-fc1b71635cf3",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
