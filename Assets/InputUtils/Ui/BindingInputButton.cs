@@ -60,6 +60,8 @@ namespace Com.Github.Knose1.InputUtils.Ui {
 
 		private void Controller_OnRebindEnd(InputControl obj)
 		{
+			if (!_isRebinding) return;
+
 			if (Input.GetMouseButton(0))
 			{
 				_isLeftButton = true;
