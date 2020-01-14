@@ -41,6 +41,9 @@ namespace Com.Github.Knose1.InputUtils.InputController {
 		protected InputActionRebindingExtensions.RebindingOperation currentActionRebinding;
 
 		public static event Action<InputControl> OnRebindEnd;
+		public static event Action<InputControl> OnRebindCancel;
+		public static event Action<InputControl> OnRebindComplete;
+		public static event Action OnPotentialMatch;
 
 		private void Awake()
 		{
@@ -50,8 +53,11 @@ namespace Com.Github.Knose1.InputUtils.InputController {
 			}
 
 			InitControllerProject();
-			GetRebindingFunctions();
-			GetRebindingFunctionsEditor();
+			GenerateRebindingFunctions();
+			
+			#if UNITY_EDITOR
+			GenerateRebindingFunctionsEditor();
+			#endif
 
 			instance = this;
 		}
@@ -70,7 +76,7 @@ namespace Com.Github.Knose1.InputUtils.InputController {
 			GetRebindingFunctionsEditor();
 		}
 
-		public void Rebind(InputAction inputAction, List<InputAction> rebindListCompare)
+		public InputActionRebindingExtensions.RebindingOperation Rebind(InputAction inputAction, List<InputAction> rebindListCompare)
 		{
 			IsRebinding = true;
 			this.rebindListCompare = rebindListCompare;
@@ -83,30 +89,37 @@ namespace Com.Github.Knose1.InputUtils.InputController {
 				.OnPotentialMatch(Rebinding_OnPotentialMatch)
 				.OnCancel(Rebinding_OnCancel)
 				.OnComplete(Rebinding_OnComplete);
-			currentActionRebinding.Start();
+
+			return currentActionRebinding;
 		}
 
-		private void Rebinding_OnComplete(InputActionRebindingExtensions.RebindingOperation obj)
+		protected void Rebinding_OnComplete(InputActionRebindingExtensions.RebindingOperation obj)
 		{
 			Debug.Log(REBINDING_LOG_PREFIX + "Complete");
-			OnRebindEnd(obj.selectedControl);
+
+			OnRebindEnd?.Invoke(obj.selectedControl);
+			OnRebindComplete?.Invoke(obj.selectedControl);
+			
 			currentActionRebinding = null;
 			IsRebinding = false;
 
 			obj.Dispose();
 		}
 
-		private void Rebinding_OnCancel(InputActionRebindingExtensions.RebindingOperation obj)
+		protected void Rebinding_OnCancel(InputActionRebindingExtensions.RebindingOperation obj)
 		{
 			Debug.Log(REBINDING_LOG_PREFIX + "Canceled");
-			OnRebindEnd(obj.action.controls[0]);
+
+			OnRebindEnd?.Invoke(obj.action.controls[0]);
+			OnRebindCancel?.Invoke(obj.action.controls[0]);
+
 			currentActionRebinding = null;
 			IsRebinding = false;
 
 			obj.Dispose();
 		}
 
-		private void Rebinding_OnPotentialMatch(InputActionRebindingExtensions.RebindingOperation obj)
+		protected void Rebinding_OnPotentialMatch(InputActionRebindingExtensions.RebindingOperation obj)
 		{
 			Debug.Log(REBINDING_LOG_PREFIX + obj.selectedControl.path);
 
@@ -125,6 +138,8 @@ namespace Com.Github.Knose1.InputUtils.InputController {
 				}
 			}
 
+			OnPotentialMatch();
+
 			obj.Complete();
 		}
 
@@ -133,6 +148,7 @@ namespace Com.Github.Knose1.InputUtils.InputController {
 			if (this == instance) instance = null;
 		}
 
+		#region Editor
 		#if UNITY_EDITOR
 		[Obsolete("This function can ONLY be used by Unity To generate a new Controller", false)]
 		public static void TryCreateController(MenuCommand menu)
@@ -208,12 +224,12 @@ namespace Com.Github.Knose1.InputUtils.InputController {
 				outfile.WriteLine("		");
 				outfile.WriteLine("		public void RebindLeft()");
 				outfile.WriteLine("		{");
-				outfile.WriteLine("			Rebind(input.Gameplay.Left, new List<InputAction>() { input.Gameplay.Right });");
+				outfile.WriteLine("			Rebind(input.Gameplay.Left, new List<InputAction>() { input.Gameplay.Right }).Start();");
 				outfile.WriteLine("		}");
 				outfile.WriteLine("		");
 				outfile.WriteLine("		public void RebindRight()");
 				outfile.WriteLine("		{");
-				outfile.WriteLine("			Rebind(input.Gameplay.Right, new List<InputAction>() { input.Gameplay.Left });");
+				outfile.WriteLine("			Rebind(input.Gameplay.Right, new List<InputAction>() { input.Gameplay.Left }).Start();");
 				outfile.WriteLine("		}");
 				outfile.WriteLine("		public void OnDestroy()");
 				outfile.WriteLine("		{");
@@ -230,5 +246,6 @@ namespace Com.Github.Knose1.InputUtils.InputController {
 			AssetDatabase.Refresh();
 		}
 		#endif
+		#endregion Editor
 	}
 }

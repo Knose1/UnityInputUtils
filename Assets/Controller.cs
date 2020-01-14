@@ -14,7 +14,7 @@ namespace Com.Github.Knose1.InputUtils.InputController {
 		{
 			input = new UnityInputSystem();
 		}
-		
+
 		partial void GetRebindingFunctionsEditor()
 		{
 			rebindingFunctionsEditor = new List<RebindingFunction>();
@@ -30,12 +30,12 @@ namespace Com.Github.Knose1.InputUtils.InputController {
 		
 		public void RebindLeft()
 		{
-			Rebind(input.Gameplay.Left, new List<InputAction>() { input.Gameplay.Right });
+			Rebind(input.Gameplay.Left, new List<InputAction>() { input.Gameplay.Right }).Start();
 		}
 		
 		public void RebindRight()
 		{
-			Rebind(input.Gameplay.Right, new List<InputAction>() { input.Gameplay.Left });
+			Rebind(input.Gameplay.Right, new List<InputAction>() { input.Gameplay.Left }).Start();
 		}
 		public void OnDestroy()
 		{
